@@ -14,31 +14,23 @@ import InputLabel from "@mui/material/InputLabel";
 
 import moment from "moment";
 
-const initialNewsletter = {
-  name: "",
-  period: "",
-};
-
-const initialPeriods = ["Daily", "Weekly", "Monthly"];
-
 export function CreateNewsletterDialog({ open, onClose, onCreate }) {
-  const [newsletter, setNewsletter] = React.useState(initialNewsletter);
+  const [content, setContent] = React.useState("");
+  const [image, setImage] = React.useState("");
 
   const handleClose = () => {
     onClose();
   };
 
   const handleCreate = () => {
-    onCreate(newsletter);
-    setNewsletter(initialNewsletter);
+    onCreate({ content, image });
+    setContent("");
+    setImage("");
     onClose();
   };
 
-  const onNewsletterChange = (field) => (e) => {
-    setNewsletter({
-      ...newsletter,
-      [field]: e.target.value,
-    });
+  const onImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
   return (
@@ -50,30 +42,26 @@ export function CreateNewsletterDialog({ open, onClose, onCreate }) {
           autoFocus
           margin="dense"
           id="name"
-          label="Name"
+          label="Description"
           type="text"
-          value={newsletter.name}
-          onChange={onNewsletterChange("name")}
+          value={content}
+          multiline={true}
+          rows={3}
+          onChange={(e) => setContent(e.target.value)}
           fullWidth
         />
-        <FormControl fullWidth margin="dense">
-          <InputLabel id="tag-select-label">Tag</InputLabel>
-          <Select
-            id="tag-select"
-            labelId="tag-select-label"
-            label="Tag"
-            margin="dense"
-            value={newsletter.period}
-            onChange={onNewsletterChange("period")}
-            fullWidth
-          >
-            {initialPeriods.map((period) => (
-              <MenuItem key={period} value={period}>
-                {period}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <TextField
+          id="image-input"
+          type="file"
+          label="Image"
+          margin="dense"
+          onChange={onImageChange}
+          inputProps={{
+            multiple: "multiple",
+          }}
+          fullWidth
+          focused
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>

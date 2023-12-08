@@ -27,7 +27,7 @@ function App() {
             <Route path="/news" element={<News />} />
             <Route path="/newsletter" element={<Newsletter />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/admission" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -25,32 +25,48 @@ export function Newsletter() {
 
   const tagColumns = [
     {
-      title: "Name",
-      name: "name",
-    },
-    {
-      title: "Interval",
-      name: "period",
+      title: "Description",
+      name: "content",
     },
     {
       title: "Published At",
       name: "created_at",
     },
+    {
+      title: "Action",
+      name: "action",
+    },
   ];
 
   const onNewsletterAdd = (newsletter) => {
-    HttpService.post("/newsletter", newsletter).then((res) => {
-      const { newsletter } = res.data;
-      setNewsletterTags([
-        ...newsletterTags,
-        {
-          ...newsletter,
-          created_at: moment(newsletter.created_at).format(
-            "MM/DD/YYYY HH:MM A"
-          ),
-        },
-      ]);
+    const { content, image } = newsletter;
+    const form = new FormData();
+    form.append("content", content);
+    form.append("image", image);
+    HttpService.post("/newsletter", form).then((res) => {
+      const { status, newsletter } = res.data;
+      if (status === 200) {
+        setNewsletterTags([
+          ...newsletterTags,
+          {
+            ...newsletter,
+            created_at: moment(newsletter.created_at).format(
+              "MM/DD/YYYY HH:MM A"
+            ),
+            action: (
+              <Button variant="contained" onClick={onTagSubmit(newsletter)}>
+                Submit
+              </Button>
+            ),
+          },
+        ]);
+      }
     });
+  };
+
+  const onTagSubmit = (tag) => () => {
+    if (!tag._id) return;
+    HttpService.post(`/newsletter/subscribe/${tag._id}`, {}).then((res) => {});
   };
 
   const onDownClick = () => {
@@ -68,6 +84,11 @@ export function Newsletter() {
       const tags = res.data.map((tag) => ({
         ...tag,
         created_at: moment(tag.created_at).format("MM/DD/YYYY HH:MM A"),
+        action: (
+          <Button variant="contained" onClick={onTagSubmit(tag)}>
+            Submit
+          </Button>
+        ),
       }));
       setNewsletterTags(tags);
     });
