@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 
 import { AuthProvider } from "./providers";
 import { Layout } from "./components";
@@ -27,7 +27,7 @@ function App() {
             <Route path="/news" element={<News />} />
             <Route path="/newsletter" element={<Newsletter />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<>Not found!</>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
