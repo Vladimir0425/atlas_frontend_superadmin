@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: "https://plankton-app-vkwlv.ondigitalocean.app/",
+  baseURL: "https://atlasacademics.com/api",
 });
 
 export class HttpService {
