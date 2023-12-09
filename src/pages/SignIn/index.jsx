@@ -26,9 +26,10 @@ export function SignIn() {
 
   const onSubmitClick = () => {
     HttpService.post("/user/login", { username, password }).then((res) => {
-      console.log(res.data);
-      if (res.data === true) {
+      const { status, token } = res.data;
+      if (status === 200) {
         setIsLogin(true);
+        localStorage.setItem("token", token);
       }
     });
   };
