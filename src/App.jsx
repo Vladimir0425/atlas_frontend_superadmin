@@ -16,7 +16,7 @@ import {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/super-admin">
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<></>} />
