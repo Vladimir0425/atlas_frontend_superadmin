@@ -7,5 +7,5 @@ import styles from "./style";
 const Box = styled(MuiBox)(styles.root);
 
 export function Footer() {
-  return <Box>@Copyright 2023</Box>;
+  return <Box>Atlas Academics@2023</Box>;
 }

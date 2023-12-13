@@ -8,6 +8,8 @@ import { fileSaver } from "../../utils";
 
 export function AtlasQuiz() {
   const [rowsData, setRowsData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const columns = [
     {
       title: "Email",
@@ -33,6 +35,21 @@ export function AtlasQuiz() {
     });
   };
 
+  const onDelClick = () => {
+    HttpService.post("/admission/delete/multiple", {
+      ids: JSON.stringify(selectedRows),
+    }).then((res) => {
+      const message = res.data;
+      if (message === "success") {
+        const result = rowsData.filter(
+          (item) => !selectedRows.includes(item._id)
+        );
+        setRowsData(result);
+        setSelectedRows([]);
+      }
+    });
+  };
+
   useEffect(() => {
     HttpService.get("/isright").then((res) => {
       const data = res.data;
@@ -44,11 +61,26 @@ export function AtlasQuiz() {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl mb-4">Atlas Quiz</h1>
-        <Button color="secondary" variant="contained" onClick={onDownClick}>
-          Download
-        </Button>
+        <div className="flex gap-x-4">
+          <Button
+            color="error"
+            variant="contained"
+            onClick={onDelClick}
+            disabled={!selectedRows.length}
+          >
+            Remove
+          </Button>
+          <Button color="info" variant="contained" onClick={onDownClick}>
+            Download
+          </Button>
+        </div>
       </div>
-      <ReusableTable columns={columns} rows={rowsData} />
+      <ReusableTable
+        columns={columns}
+        rows={rowsData}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+      />
     </div>
   );
 }

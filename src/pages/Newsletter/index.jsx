@@ -14,6 +14,7 @@ import { fileSaver } from "../../utils";
 export function Newsletter() {
   const [subscribers, setSubscribers] = useState([]);
   const [newsletterTags, setNewsletterTags] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [dlgOpen, setDlgOpen] = useState(false);
 
   const subscriberColumns = [
@@ -75,6 +76,21 @@ export function Newsletter() {
     });
   };
 
+  const onDelClick = () => {
+    HttpService.post("/newsletter/delete/multiple", {
+      ids: JSON.stringify(selectedRows),
+    }).then((res) => {
+      const message = res.data;
+      if (message === "success") {
+        const result = newsletterTags.filter(
+          (item) => !selectedRows.includes(item._id)
+        );
+        setNewsletterTags(result);
+        setSelectedRows([]);
+      }
+    });
+  };
+
   useEffect(() => {
     HttpService.get("/subscriber").then((res) => {
       setSubscribers(res.data);
@@ -106,7 +122,15 @@ export function Newsletter() {
           >
             Add
           </Button>
-          <Button color="secondary" variant="contained" onClick={onDownClick}>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={onDelClick}
+            disabled={!selectedRows.length}
+          >
+            Remove
+          </Button>
+          <Button color="info" variant="contained" onClick={onDownClick}>
             Download
           </Button>
         </div>
@@ -116,7 +140,12 @@ export function Newsletter() {
           <ReusableTable columns={subscriberColumns} rows={subscribers} />
         </div>
         <div className="md:col-span-2">
-          <ReusableTable columns={tagColumns} rows={newsletterTags} />
+          <ReusableTable
+            columns={tagColumns}
+            rows={newsletterTags}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+          />
         </div>
       </div>
       <CreateNewsletterDialog

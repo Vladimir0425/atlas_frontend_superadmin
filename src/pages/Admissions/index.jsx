@@ -11,6 +11,7 @@ import { Button } from "@mui/material";
 
 export function Admissions() {
   const [rowsData, setRowsData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const columns = [
     {
       title: "Student name",
@@ -56,6 +57,21 @@ export function Admissions() {
     });
   };
 
+  const onDeleteClick = () => {
+    HttpService.post("/admission/delete/multiple", {
+      ids: JSON.stringify(selectedRows),
+    }).then((res) => {
+      const message = res.data;
+      if (message === "success") {
+        const result = rowsData.filter(
+          (item) => !selectedRows.includes(item._id)
+        );
+        setRowsData(result);
+        setSelectedRows([]);
+      }
+    });
+  };
+
   useEffect(() => {
     HttpService.get("/admission").then((res) => {
       const data = res.data.map((item) => ({
@@ -72,11 +88,26 @@ export function Admissions() {
     <div className="p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl mb-4">Admissions</h1>
-        <Button variant="contained" onClick={onDownClick}>
-          Download
-        </Button>
+        <div className="flex gap-x-2">
+          <Button
+            color="error"
+            variant="contained"
+            onClick={onDeleteClick}
+            disabled={!selectedRows.length}
+          >
+            Remove
+          </Button>
+          <Button color="info" variant="contained" onClick={onDownClick}>
+            Download
+          </Button>
+        </div>
       </div>
-      <ReusableTable columns={columns} rows={rowsData} />
+      <ReusableTable
+        columns={columns}
+        rows={rowsData}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+      />
     </div>
   );
 }

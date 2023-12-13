@@ -14,17 +14,27 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export function ReusuableRow(props) {
-  const { row, columns, type = "checkable" } = props;
+  const { row, columns, checked, onCheck, type = "checkable" } = props;
   const [expanded, setExpanded] = React.useState(false);
-  const [checked, setChecked] = React.useState(false);
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell width={10}>
-          {type === "normal" ? (
-            row.id
-          ) : type === "expandable" ? (
+        {type === "normal" ? (
+          <>
+            <TableCell>
+              <Checkbox
+                checked={checked}
+                onChange={onCheck}
+                inputProps={{
+                  "aria-label": "Row Selector",
+                }}
+              />
+            </TableCell>
+            <TableCell>{row.id}</TableCell>
+          </>
+        ) : (
+          <TableCell>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -32,18 +42,8 @@ export function ReusuableRow(props) {
             >
               {checked ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
-          ) : type === "checkable" ? (
-            <Checkbox
-              checked={checked}
-              onChange={() => setChecked(!checked)}
-              inputProps={{
-                "aria-label": "Row Selector",
-              }}
-            />
-          ) : (
-            <></>
-          )}
-        </TableCell>
+          </TableCell>
+        )}
         {columns.map((column, index) => (
           <TableCell
             key={column.name}

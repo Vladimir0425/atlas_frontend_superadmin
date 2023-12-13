@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import { ReusableTable } from "../../components/common";
 
 import { HttpService } from "../../services";
+import { Button } from "@mui/material";
 
 const globalColumns = [
   {
@@ -74,6 +75,34 @@ function CustomTabPanel(props) {
 export function Contact() {
   const [contactType, setContactType] = useState("general");
   const [rowsData, setRowsData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const onDeleteClick = () => {
+    HttpService.post("/message/delete/multiple", {
+      ids: JSON.stringify(panelSelectedRows()),
+    }).then((res) => {
+      const message = res.data;
+      if (message === "success") {
+        const result = rowsData.filter(
+          (item) => !panelSelectedRows().includes(item._id)
+        );
+        const selectedResult = selectedRows.filter(
+          (item) => !panelSelectedRows().includes(item)
+        );
+        setRowsData(result);
+        setSelectedRows(selectedResult);
+      }
+    });
+  };
+
+  const panelSelectedRows = () => {
+    return selectedRows.filter((id) => {
+      const contact = rowsData
+        .filter((item) => item.type === contactType)
+        .find((item) => item._id === id);
+      return contact && contact.type === contactType;
+    });
+  };
 
   useEffect(() => {
     HttpService.get("/message").then((res) => {
@@ -83,7 +112,17 @@ export function Contact() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl mb-4">Contact</h1>
+      <div className="flex justify-between items-end">
+        <h1 className="text-3xl mb-4">Contact</h1>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={onDeleteClick}
+          disabled={!panelSelectedRows().length}
+        >
+          Remove
+        </Button>
+      </div>
 
       <Box sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -106,6 +145,8 @@ export function Contact() {
               columns={globalColumns.filter((column) =>
                 type.columns.includes(column.name)
               )}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
             />
           </CustomTabPanel>
         ))}
